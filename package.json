@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "console.table": "0.10.0",
+    "figlet": "^1.5.0",
+    "inquirer": "8.0.0",
     "mysql": "github:mysqljs/mysql",
-    "node": "^15.10.0"
+    "node": "^15.10.0",
+    "sequelize": "^6.5.1"
   }
 }
