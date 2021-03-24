@@ -3,7 +3,7 @@ const connection = require("../connection/server");
 const index = require('../index');
 require('mysql');
 
-function addEmployee() {
+async function addEmployee() {
 
     //gather titles into array from available roles
     let sql = 'SELECT title FROM role';
@@ -60,17 +60,18 @@ function addEmployee() {
                 let sql = "SELECT id FROM employees WHERE first_name='" + data.newEmpMan + "'";
                 connection.query(sql, (err, managerId) => {
                     if (err) throw (err);
-                    
+
                     //getting role id of chosen title
                     sql = "SELECT id FROM role WHERE title='" + data.newEmpTitle + "'";
                     connection.query(sql, (err, titleId) => {
                         if (err) throw (err);
-                        
+
                         //inserting employee values into sql employees table as new employee
                         sql = "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('" + firstName + "', '" + lastName + "', " + titleId[0].id + ", " + managerId[0].id + ")";
                         connection.query(sql, (err) => {
                             if (err) throw (err);
-                            console.log(firstName+" "+lastName+" was added to the database!");
+                            console.log(firstName + " " + lastName + " was added to the database!");
+
                         });
                     });
                 });
@@ -81,12 +82,75 @@ function addEmployee() {
 
 
 function addRole() {
-     
+
+    //gettting array of departments to put role into
+    let sql = 'SELECT department FROM department';
+    connection.query(sql, function (err, rows) {
+        if (err) throw (err);
+        const departmentArray = rows.map((department) => {
+            return department.department;
+        });
+
+        inquirer.prompt([
+            {
+                name: 'newRole',
+                type: 'input',
+                message: 'What is the new role?',
+            },
+            {
+                name: 'salary',
+                type: 'input',
+                message: 'what is this role\'s salary?',
+                //making sure answer is number
+                validate: (answer) => {
+                    if (isNaN(answer) || answer < 0) {
+                        return "please enter a whole number";
+                    }
+                    return true;
+                }
+            },
+            {
+                name: 'roleDept',
+                type: 'list',
+                message: 'What department is this role in?',
+                choices: departmentArray,
+            }
+        ]).then((answer) => {
+
+            let sql = "SELECT id FROM department WHERE '" + answer.roleDept + "'=department";
+            connection.query(sql, (err, deptId) => {
+                if (err) throw (err);
+
+                let sql = "INSERT INTO role (title, salary, department_id) VALUES ('" + answer.newRole + "', " + answer.salary + ", " + deptId[0].id + ")";
+                connection.query(sql, (err) => {
+                    if (err) throw (err);
+
+                    console.log("Role of " + answer.newRole + " added to the role database!")
+                });
+            });
+        });
+    });
 }
 
 function addDepartment() {
-    
+
+    inquirer.prompt([
+        {
+            name: 'newDept',
+            type: 'input',
+            message: 'What is the new Department?',
+        },
+    ]).then((answer) => {
+
+
+        let sql = "INSERT INTO department (department) VALUES ('" + answer.newDept + "')";
+        connection.query(sql, (err) => {
+            if (err) throw (err);
+            console.log("Department of " + answer.newDept + " added to the role database!")
+        });
+    });
 }
+
 
 //exporting functions
 module.exports = { addEmployee, addRole, addDepartment };

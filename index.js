@@ -34,7 +34,7 @@ function tableDisplay() {
 }
 
 //run main inquire prompt for main DB choices
-function runInquiry () {
+let runInquiry = function () {
 
     inquirer.prompt({
         name: 'choice',
@@ -51,7 +51,7 @@ function runInquiry () {
             'Edit Employee',
             'Quit'
         ]
-    }).then(async (answer) => {
+    }).then((answer) => {
 
         //looking through choices of answer to determine function
         switch (answer.choice) {
@@ -69,23 +69,18 @@ function runInquiry () {
                 break;
             case 'Add Employee':
                 add.addEmployee();
-                pause();
                 break;
             case 'Add Role':
                 add.addRole();
-                pause();
                 break;
             case 'Add Department':
                 add.addDepartment();
-                pause();
                 break;
             case 'Remove Employee':
                 remove.removeEmployee();
-                pause();
                 break;
             case 'Edit Employee':
                 remove.editEmployee();
-                pause();
                 break;
             case 'Quit':
                 connection.end();

@@ -25,11 +25,11 @@ const removeEmployee = () => {
             sql = "SELECT id FROM employees WHERE first_name='" + answer.empRemove + "'";
             connection.query(sql, (err, value) => {
                 if (err) throw ('no employee found with that value');
-
+                
                 //finding where that employees id falls in the manager role and deleting them from their
-                sql = "UDATE employees SET manager_id = null WHERE manager_id=" + value + "";
+                sql = "UPDATE employees SET manager_id=null WHERE manager_id="+value[0].id;
                 connection.query(sql, (err) => {
-                    if (err) throw ('no manager role found');
+                    if (err) throw err;
                 });
             });
 
@@ -37,6 +37,7 @@ const removeEmployee = () => {
             sql = "DELETE FROM employees WHERE first_name='" + answer.empRemove + "'";
             connection.query(sql, (err, row) => {
                 if (err) throw err;
+                console.log("Employee "+answer.empRemove+" removed from the database!")
             });
         });
     });
@@ -76,13 +77,13 @@ const editEmployee = () => {
                 {
                     type: "input",
                     name: "empEditFirstName",
-                    message: "What is this employees First Name?",
+                    message: "What is this employees new First Name?",
                     when: (answers) => answers.empEditChoice == 'first_name',
                 },
                 {
                     type: "input",
                     name: "empEditLastName",
-                    message: "What is this employees Last Name?",
+                    message: "What is this employees new Last Name?",
                     when: (answers) => answers.empEditChoice == 'last_name',
                 },
                 {
@@ -95,7 +96,7 @@ const editEmployee = () => {
                 {
                     type: "list",
                     name: "empEditManager",
-                    message: "What is this employees Manager?",
+                    message: "What is this employees new Manager?",
                     choices: empArray,
                     when: (answers) => answers.empEditChoice == 'manager',
                 }
@@ -111,7 +112,7 @@ const editEmployee = () => {
 
                         //chose to edit first_name option running query to input new name into chosen employee field
                         case "first_name":
-                            let sql = "UPDATE employees SET first_name = '" + answers.empEditFirstName + "' WHERE employees.id=" + id;
+                            let sql = "UPDATE employees SET first_name = '" + answers.empEditFirstName + "' WHERE employees.id=" + id[0].id;
                             connection.query(sql, (err) => {
                                 if (err) throw err;
                             });
@@ -149,6 +150,7 @@ const editEmployee = () => {
                             });
                             break;
                     }
+                    console.log("Employee "+ answers.empEditFirstName +" "+ answers.empEditLastName +" Successfully edited!")
                     //end switch statement
                 });
             });
