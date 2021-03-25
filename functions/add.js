@@ -1,6 +1,5 @@
 const inquirer = require("inquirer");
 const connection = require("../connection/server");
-const index = require('../index');
 require('mysql');
 
 async function addEmployee() {
@@ -48,31 +47,36 @@ async function addEmployee() {
 
             ]).then((data) => {
 
+                let manager_Id = "";
+
                 //lets make sure our new employees first and last name are properly capitalized
                 const firstName = data.newEmpFirstName[0].toUpperCase() + data.newEmpFirstName.substring(1);
                 const lastName = data.newEmpLastName[0].toUpperCase() + data.newEmpLastName.substring(1);
-
+                console.log(data.newEmpMan)
                 //setting none chosen value to null if aplicable
-                if (data.managersArray == 'X None') {
-                    data.managersArray = 'NULL';
+                if (data.newEmpMan == 'X None') {
+                    manager_Id = 'null';
                 }
-                //getting manager id of chosen manager
-                let sql = "SELECT id FROM employees WHERE first_name='" + data.newEmpMan + "'";
-                connection.query(sql, (err, managerId) => {
+                else {
+                    //getting manager id of chosen manager
+                    let sql = "SELECT id FROM employees WHERE first_name='" + data.newEmpMan + "'";
+                    connection.query(sql, (err, manid) => {
+                        if (err) throw (err);
+                        manager_Id = manid[0].id
+                    });
+                }
+
+                //getting role id of chosen title
+                sql = "SELECT id FROM role WHERE title='" + data.newEmpTitle + "'";
+                connection.query(sql, (err, titleId) => {
                     if (err) throw (err);
 
-                    //getting role id of chosen title
-                    sql = "SELECT id FROM role WHERE title='" + data.newEmpTitle + "'";
-                    connection.query(sql, (err, titleId) => {
+                    //inserting employee values into sql employees table as new employee
+                    sql = "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('" + firstName + "', '" + lastName + "', " + titleId[0].id + ", " + manager_Id + ")";
+                    connection.query(sql, (err) => {
                         if (err) throw (err);
-
-                        //inserting employee values into sql employees table as new employee
-                        sql = "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('" + firstName + "', '" + lastName + "', " + titleId[0].id + ", " + managerId[0].id + ")";
-                        connection.query(sql, (err) => {
-                            if (err) throw (err);
-                            console.log(firstName + " " + lastName + " was added to the database!");
-
-                        });
+                        console.log(firstName + " " + lastName + " was added to the database!");
+                        return;
                     });
                 });
             });
