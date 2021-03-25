@@ -24,7 +24,7 @@
 This image below is an example of our command line application
 ![Nodeprompt Example](Assets/Capture1.PNG)
 </br></br></br>
-Watch the video below for a walkthrough!
+Watch the video below for a walkthrough!</br>
 https://drive.google.com/file/d/16KY-ZpCc4Yr_2ZaSb1WDwbwmKRr6UwHR/view
 
 ## Installation Instructions 
